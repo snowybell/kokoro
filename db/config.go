@@ -7,16 +7,17 @@ import (
 )
 
 type Config struct {
-	Host     string `required:"true"`
-	Name     string `required:"true"`
-	User     string `required:"true"`
-	Password string `required:"true"`
-	SSLMode  string `default:"disable"`
+	Host        string `required:"true"`
+	Name        string `required:"true"`
+	User        string `required:"true"`
+	Password    string `required:"true"`
+	SSLMode     string `default:"disable"`
+	AutoMigrate bool   `default:"false" split_words:"true"`
 }
 
 func (cfg *Config) ToConnString() string {
 	return fmt.Sprintf("host=%s user=%s dbname=%s sslmode=%s password=%s",
-		cfg.Host, cfg.Name, cfg.Name, cfg.SSLMode, cfg.Password)
+		cfg.Host, cfg.User, cfg.Name, cfg.SSLMode, cfg.Password)
 }
 
 func LoadConfig() (*Config, error) {
