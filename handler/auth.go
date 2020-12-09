@@ -2,6 +2,8 @@ package handler
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/snowybell/kokoro/entity"
+	r "github.com/snowybell/kokoro/repo"
 	"github.com/snowybell/kokoro/utils"
 )
 
@@ -10,13 +12,25 @@ type LoginInput struct {
 	Password string `json:"password" validate:"required"`
 }
 
-func Login(ctx *fiber.Ctx) error {
-	var input LoginInput
-	if err := utils.ShouldBind(ctx, &input); err != nil {
-		return ctx.
-			Status(fiber.StatusBadRequest).
-			JSON(fiber.Map{"error": "username and password is required"})
-	}
+func Login(repo r.Repository) fiber.Handler {
+	return func(ctx *fiber.Ctx) error {
+		var input LoginInput
+		if err := utils.ShouldBind(ctx, &input); err != nil {
+			return ctx.
+				Status(fiber.StatusBadRequest).
+				JSON(fiber.Map{"error": "username and password is required"})
+		}
 
-	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{"success": true})
+		user, err := repo.GetUser(entity.User{
+			Username: input.Username,
+			Password: input.Password,
+		})
+		if err != nil || user == nil {
+			return ctx.
+				Status(fiber.StatusOK).
+				JSON(fiber.Map{"error": "username or password is not correct"})
+		}
+
+		return ctx.Status(fiber.StatusOK).JSON(fiber.Map{"success": true})
+	}
 }
