@@ -15,6 +15,7 @@ import (
 )
 
 func main() {
+	// Fiber app instance
 	app := fiber.New()
 	app.Use(cors.New())
 	app.Use(requestid.New(), logger.New())
