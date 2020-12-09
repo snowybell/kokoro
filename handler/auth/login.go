@@ -1,4 +1,4 @@
-package handler
+package auth
 
 import (
 	"github.com/gofiber/fiber/v2"
@@ -18,7 +18,7 @@ func Login(repo r.Repository) fiber.Handler {
 		if err := utils.ShouldBind(ctx, &input); err != nil {
 			return ctx.
 				Status(fiber.StatusBadRequest).
-				JSON(fiber.Map{"error": "username and password is required"})
+				JSON(fiber.Map{"error": "bad request"})
 		}
 
 		user, err := repo.GetUser(entity.User{
