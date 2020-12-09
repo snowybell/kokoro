@@ -2,6 +2,9 @@ package auth
 
 import (
 	"errors"
+	"time"
+
+	jwtGo "github.com/dgrijalva/jwt-go"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/snowybell/kokoro/entity"
@@ -15,7 +18,7 @@ type LoginInput struct {
 	Password string `json:"password" validate:"required"`
 }
 
-func Login(repo r.Repository) fiber.Handler {
+func Login(jwt utils.JWT, repo r.Repository) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
 		var input LoginInput
 		if err := utils.ShouldBind(ctx, &input); err != nil {
@@ -34,10 +37,25 @@ func Login(repo r.Repository) fiber.Handler {
 				JSON(fiber.Map{"error": "username or password is not correct"})
 		}
 
+		// Issuing token
+		token := jwt.New()
+		claim := token.Claims.(jwtGo.MapClaims)
+		claim["id"] = user.ID
+		claim["exp"] = time.Now().Add(time.Hour * 72).Unix()
+
+		// Signing token
+		tokenString, err := jwt.SignedString(token)
+		if err != nil {
+			return ctx.
+				Status(fiber.StatusInternalServerError).
+				JSON(fiber.Map{"error": "internal server error"})
+		}
+
 		return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
-			"success":   true,
-			"username":  user.Username,
-			"createdAt": user.CreatedAt,
+			"success": true,
+			"data": fiber.Map{
+				"token": tokenString,
+			},
 		})
 	}
 }

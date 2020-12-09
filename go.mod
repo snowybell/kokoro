@@ -4,6 +4,7 @@ go 1.14
 
 require (
 	github.com/andybalholm/brotli v1.0.1 // indirect
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-playground/validator/v10 v10.4.1
 	github.com/gofiber/fiber/v2 v2.2.3
 	github.com/jackc/pgx/v4 v4.10.0 // indirect
