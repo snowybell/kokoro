@@ -1,10 +1,13 @@
 package auth
 
 import (
+	"errors"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/snowybell/kokoro/entity"
 	r "github.com/snowybell/kokoro/repo"
 	"github.com/snowybell/kokoro/utils"
+	"gorm.io/gorm"
 )
 
 type LoginInput struct {
@@ -25,12 +28,16 @@ func Login(repo r.Repository) fiber.Handler {
 			Username: input.Username,
 			Password: input.Password,
 		})
-		if err != nil || user == nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return ctx.
 				Status(fiber.StatusOK).
 				JSON(fiber.Map{"error": "username or password is not correct"})
 		}
 
-		return ctx.Status(fiber.StatusOK).JSON(fiber.Map{"success": true})
+		return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+			"success":   true,
+			"username":  user.Username,
+			"createdAt": user.CreatedAt,
+		})
 	}
 }

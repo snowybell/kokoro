@@ -2,12 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="eacb43fe-e6cf-44ad-8b9f-87200afc2ea4" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/handler/auth/register.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/handler/auth.go" beforeDir="false" afterPath="$PROJECT_DIR$/handler/auth/login.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/repo/interface.go" beforeDir="false" afterPath="$PROJECT_DIR$/repo/interface.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/repo/user.go" beforeDir="false" afterPath="$PROJECT_DIR$/repo/user.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/router/router.go" beforeDir="false" afterPath="$PROJECT_DIR$/router/router.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/handler/auth/login.go" beforeDir="false" afterPath="$PROJECT_DIR$/handler/auth/login.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/handler/auth/register.go" beforeDir="false" afterPath="$PROJECT_DIR$/handler/auth/register.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

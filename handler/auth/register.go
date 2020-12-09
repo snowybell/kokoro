@@ -1,6 +1,8 @@
 package auth
 
 import (
+	"errors"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/snowybell/kokoro/entity"
 	"github.com/snowybell/kokoro/repo"
@@ -25,7 +27,7 @@ func Register(repo repo.Repository) fiber.Handler {
 		}
 
 		_, err := repo.GetUserByUsername(input.Username)
-		if err != gorm.ErrRecordNotFound {
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			return ctx.
 				Status(fiber.StatusOK).
 				JSON(fiber.Map{"error": "username has already been taken"})
