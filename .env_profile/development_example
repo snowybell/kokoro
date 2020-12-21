@@ -1,0 +1,9 @@
+# Development environment profile
+# Just run `source .env_profile/development`
+# then you can run the app
+
+# Database configurations
+export DATABASE_HOST=
+export DATABASE_NAME=
+export DATABASE_USER=
+export DATABASE_PASSWORD=
