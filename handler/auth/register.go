@@ -3,6 +3,8 @@ package auth
 import (
 	"errors"
 
+	"github.com/snowybell/kokoro/response"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/snowybell/kokoro/entity"
 	"github.com/snowybell/kokoro/repo"
@@ -21,16 +23,18 @@ func Register(repo repo.Repository) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
 		var input RegisterInput
 		if err := utils.ShouldBind(ctx, &input); err != nil {
-			return ctx.
-				Status(fiber.StatusBadRequest).
-				JSON(fiber.Map{"error": "bad request"})
+			return response.
+				Error(ctx).
+				WithMessage("bad request").
+				End()
 		}
 
 		_, err := repo.GetUserByUsername(input.Username)
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
-			return ctx.
-				Status(fiber.StatusOK).
-				JSON(fiber.Map{"error": "username has already been taken"})
+			return response.
+				Error(ctx).
+				WithMessage("username has already been taken").
+				End()
 		}
 
 		user, err := repo.SaveUser(entity.User{
@@ -40,16 +44,16 @@ func Register(repo repo.Repository) fiber.Handler {
 			Password: input.Password,
 		})
 		if err != nil || user == nil {
-			return ctx.
-				Status(fiber.StatusInternalServerError).
-				JSON(fiber.Map{"error": "internal server error"})
+			return response.
+				Error(ctx).
+				WithCode(fiber.StatusInternalServerError).
+				WithMessage("internal server error").
+				End()
 		}
 
-		return ctx.
-			Status(fiber.StatusOK).
-			JSON(fiber.Map{
-				"success":   true,
-				"createdAt": user.CreatedAt,
-			})
+		return response.
+			Success(ctx).
+			WithData(fiber.Map{"createdAt": user.CreatedAt}).
+			End()
 	}
 }

@@ -4,6 +4,8 @@ import (
 	"errors"
 	"time"
 
+	"github.com/snowybell/kokoro/response"
+
 	"github.com/dgrijalva/jwt-go"
 
 	"github.com/gofiber/fiber/v2"
@@ -22,9 +24,10 @@ func Login(jwtConfig *utils.JWTConfig, repo r.Repository) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
 		var input LoginInput
 		if err := utils.ShouldBind(ctx, &input); err != nil {
-			return ctx.
-				Status(fiber.StatusBadRequest).
-				JSON(fiber.Map{"error": "bad request"})
+			return response.
+				Error(ctx).
+				WithMessage("bad request").
+				End()
 		}
 
 		user, err := repo.GetUser(entity.User{
@@ -32,9 +35,10 @@ func Login(jwtConfig *utils.JWTConfig, repo r.Repository) fiber.Handler {
 			Password: input.Password,
 		})
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return ctx.
-				Status(fiber.StatusOK).
-				JSON(fiber.Map{"error": "username or password is not correct"})
+			return response.
+				Error(ctx).
+				WithMessage("username or password is not correct").
+				End()
 		}
 
 		// Issuing token
@@ -44,18 +48,18 @@ func Login(jwtConfig *utils.JWTConfig, repo r.Repository) fiber.Handler {
 		claim["exp"] = time.Now().Add(time.Hour * 72).Unix()
 
 		// Signing token
-		tokenString, err := token.SignedString([]byte(jwtConfig.SecretKey))
+		tokenString, err := token.SignedString(jwtConfig.SecretKey)
 		if err != nil {
-			return ctx.
-				Status(fiber.StatusInternalServerError).
-				JSON(fiber.Map{"error": "internal server error"})
+			return response.
+				Error(ctx).
+				WithCode(fiber.StatusInternalServerError).
+				WithMessage("internal server error").
+				End()
 		}
 
-		return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
-			"success": true,
-			"data": fiber.Map{
-				"token": tokenString,
-			},
-		})
+		return response.
+			Success(ctx).
+			WithData(fiber.Map{"token": tokenString}).
+			End()
 	}
 }

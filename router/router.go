@@ -11,7 +11,6 @@ import (
 
 func SetupRoutes(app *fiber.App, jwtConfig *utils.JWTConfig, repo r.Repository) {
 	v1 := app.Group("/v1")
-	v1.Get("/ping", handler.Hello)
 	v1.Get("/me", middleware.Protected(jwtConfig), handler.Me)
 
 	// Authentication
