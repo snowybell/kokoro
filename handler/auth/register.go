@@ -25,16 +25,14 @@ func Register(repo repo.Repository) fiber.Handler {
 		if err := utils.ShouldBind(ctx, &input); err != nil {
 			return response.
 				Error(ctx).
-				WithMessage("bad request").
-				End()
+				WithMessage("bad request").End()
 		}
 
 		_, err := repo.GetUserByUsername(input.Username)
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			return response.
 				Error(ctx).
-				WithMessage("username has already been taken").
-				End()
+				WithMessage("username has already been taken").End()
 		}
 
 		user, err := repo.SaveUser(entity.User{
@@ -47,13 +45,11 @@ func Register(repo repo.Repository) fiber.Handler {
 			return response.
 				Error(ctx).
 				WithCode(fiber.StatusInternalServerError).
-				WithMessage("internal server error").
-				End()
+				WithMessage("internal server error").End()
 		}
 
 		return response.
 			Success(ctx).
-			WithData(fiber.Map{"createdAt": user.CreatedAt}).
-			End()
+			WithData(fiber.Map{"createdAt": user.CreatedAt}).End()
 	}
 }

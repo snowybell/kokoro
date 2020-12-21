@@ -26,8 +26,7 @@ func Login(jwtConfig *utils.JWTConfig, repo r.Repository) fiber.Handler {
 		if err := utils.ShouldBind(ctx, &input); err != nil {
 			return response.
 				Error(ctx).
-				WithMessage("bad request").
-				End()
+				WithMessage("bad request").End()
 		}
 
 		user, err := repo.GetUser(entity.User{
@@ -37,8 +36,7 @@ func Login(jwtConfig *utils.JWTConfig, repo r.Repository) fiber.Handler {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return response.
 				Error(ctx).
-				WithMessage("username or password is not correct").
-				End()
+				WithMessage("username or password is not correct").End()
 		}
 
 		// Issuing token
@@ -53,13 +51,11 @@ func Login(jwtConfig *utils.JWTConfig, repo r.Repository) fiber.Handler {
 			return response.
 				Error(ctx).
 				WithCode(fiber.StatusInternalServerError).
-				WithMessage("internal server error").
-				End()
+				WithMessage("internal server error").End()
 		}
 
 		return response.
 			Success(ctx).
-			WithData(fiber.Map{"token": tokenString}).
-			End()
+			WithData(fiber.Map{"token": tokenString}).End()
 	}
 }

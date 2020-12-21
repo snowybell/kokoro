@@ -16,6 +16,5 @@ func Me(ctx *fiber.Ctx) error {
 	user := entity.User{Model: gorm.Model{ID: id}}
 
 	return response.Success(ctx).
-		WithData(fiber.Map{"id": user.ID}).
-		End()
+		WithData(fiber.Map{"id": user.ID}).End()
 }
