@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	jwtGo "github.com/dgrijalva/jwt-go"
+	"github.com/dgrijalva/jwt-go"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/snowybell/kokoro/entity"
@@ -18,7 +18,7 @@ type LoginInput struct {
 	Password string `json:"password" validate:"required"`
 }
 
-func Login(jwt utils.JWT, repo r.Repository) fiber.Handler {
+func Login(jwtConfig *utils.JWTConfig, repo r.Repository) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
 		var input LoginInput
 		if err := utils.ShouldBind(ctx, &input); err != nil {
@@ -38,13 +38,13 @@ func Login(jwt utils.JWT, repo r.Repository) fiber.Handler {
 		}
 
 		// Issuing token
-		token := jwt.New()
-		claim := token.Claims.(jwtGo.MapClaims)
+		token := jwt.New(jwt.SigningMethodHS256)
+		claim := token.Claims.(jwt.MapClaims)
 		claim["id"] = user.ID
 		claim["exp"] = time.Now().Add(time.Hour * 72).Unix()
 
 		// Signing token
-		tokenString, err := jwt.SignedString(token)
+		tokenString, err := token.SignedString([]byte(jwtConfig.SecretKey))
 		if err != nil {
 			return ctx.
 				Status(fiber.StatusInternalServerError).

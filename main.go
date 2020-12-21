@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 
+	"github.com/snowybell/kokoro/router"
+
 	"github.com/snowybell/kokoro/utils"
 
 	r "github.com/snowybell/kokoro/repo"
@@ -13,7 +15,6 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/snowybell/kokoro/router"
 )
 
 func main() {
@@ -29,12 +30,12 @@ func main() {
 	}
 
 	// Init JSONWebToken config
-	jwt, err := utils.NewJWTDefault()
+	jwtConfig, err := utils.NewJWTConfig()
 	if err != nil {
 		log.Panicf("can not prepare jwt, err=%+v", err)
 	}
 
 	// Setup routes and launch app
-	router.SetupRoutes(app, jwt, repo)
+	router.SetupRoutes(app, jwtConfig, repo)
 	log.Fatal(app.Listen(":3000"))
 }
