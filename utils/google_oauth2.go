@@ -23,8 +23,8 @@ func NewGoogleOAuthConfig() (*oauth2.Config, error) {
 		ClientSecret: cfg.ClientSecret,
 		RedirectURL:  cfg.RedirectURL,
 		Scopes: []string{
-			"https://www.googleapis.com/auth/bigquery",
-			"https://www.googleapis.com/auth/blogger",
+			"https://www.googleapis.com/auth/drive.appdata",
+			"https://www.googleapis.com/auth/drive.file",
 		},
 		Endpoint: google.Endpoint,
 	}, nil

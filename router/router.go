@@ -6,6 +6,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/snowybell/kokoro/handler"
 	Auth "github.com/snowybell/kokoro/handler/auth"
+	OAuth "github.com/snowybell/kokoro/handler/oauth"
 	"github.com/snowybell/kokoro/middleware"
 	r "github.com/snowybell/kokoro/repo"
 	"github.com/snowybell/kokoro/utils"
@@ -22,6 +23,11 @@ func Register(app *fiber.App, repo r.Repository,
 	auth := v1.Group("/auth")
 	auth.Post("/login", Auth.Login(jwtConfig, repo))
 	auth.Post("/register", Auth.Register(repo))
+
+	// OAuth
+	oauth := v1.Group("/oauth")
+	oauth.Get("/google", OAuth.GoogleLoginRedirect(gOAuthConfig))
+	oauth.Get("/google/callback", OAuth.GoogleLoginCallback(gOAuthConfig))
 }
 
 func SetupRoutes(app *fiber.App) {
