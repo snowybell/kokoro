@@ -2,8 +2,16 @@ package oauth
 
 import (
 	"context"
+	"errors"
 	"strconv"
 	"time"
+
+	"gorm.io/gorm"
+
+	"github.com/dgrijalva/jwt-go"
+	"github.com/snowybell/kokoro/entity"
+
+	"github.com/snowybell/kokoro/repo"
 
 	"google.golang.org/api/option"
 
@@ -19,7 +27,7 @@ import (
 func GoogleLoginRedirect(cfg *oauth2.Config) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
 		state := strconv.FormatInt(time.Now().Unix(), 10)
-		redirectURL := cfg.AuthCodeURL(state)
+		redirectURL := cfg.AuthCodeURL(state, oauth2.AccessTypeOffline)
 		return ctx.Redirect(redirectURL, fiber.StatusMovedPermanently)
 	}
 }
@@ -30,7 +38,7 @@ type LoginCallBackInput struct {
 	Scopes string `query:"scope" validate:"required"`
 }
 
-func GoogleLoginCallback(cfg *oauth2.Config) fiber.Handler {
+func GoogleLoginCallback(cfg *oauth2.Config, jwtConfig *utils.JWTConfig, repo repo.Repository) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
 		var input LoginCallBackInput
 		if err := utils.ShouldBindQuery(ctx, &input); err != nil {
@@ -40,7 +48,7 @@ func GoogleLoginCallback(cfg *oauth2.Config) fiber.Handler {
 		}
 
 		bgCtx := context.Background()
-		token, err := cfg.Exchange(bgCtx, input.Code)
+		oAuthToken, err := cfg.Exchange(bgCtx, input.Code)
 		if err != nil {
 			return response.
 				Error(ctx).
@@ -50,7 +58,7 @@ func GoogleLoginCallback(cfg *oauth2.Config) fiber.Handler {
 		gService, err := gOAuth2.NewService(
 			bgCtx,
 			option.WithScopes(cfg.Scopes...),
-			option.WithTokenSource(cfg.TokenSource(bgCtx, token)))
+			option.WithTokenSource(cfg.TokenSource(bgCtx, oAuthToken)))
 		if err != nil {
 			return response.
 				Error(ctx).
@@ -58,16 +66,59 @@ func GoogleLoginCallback(cfg *oauth2.Config) fiber.Handler {
 				WithMessage(err.Error()).End()
 		}
 
-		tokenInfo, err := gService.Tokeninfo().Do()
+		gUser, err := gService.Userinfo.V2.Me.Get().Do()
 		if err != nil {
 			return response.
 				Error(ctx).
 				WithCode(fiber.StatusInternalServerError).
 				WithMessage(err.Error()).End()
+		}
+
+		user, err := repo.GetUserByEmail(gUser.Email)
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			token, err := repo.SaveToken(entity.Token{
+				Expiry:       oAuthToken.Expiry,
+				TokenType:    oAuthToken.TokenType,
+				AccessToken:  oAuthToken.AccessToken,
+				RefreshToken: oAuthToken.RefreshToken,
+			})
+			if err != nil {
+				return response.
+					Error(ctx).
+					WithCode(fiber.StatusInternalServerError).
+					WithMessage("save access token fail").End()
+			}
+
+			user, err = repo.SaveUser(entity.User{
+				Name:    gUser.Name,
+				Email:   gUser.Email,
+				TokenID: token.ID,
+			})
+			if err != nil {
+				return response.
+					Error(ctx).
+					WithCode(fiber.StatusInternalServerError).
+					WithMessage("create user fail").End()
+			}
+		}
+
+		// Issuing token
+		token := jwt.New(jwt.SigningMethodHS256)
+		claim := token.Claims.(jwt.MapClaims)
+		claim["id"] = user.ID
+		claim["exp"] = time.Now().Add(time.Hour * 72).Unix()
+
+		// Signing token
+		tokenString, err := token.SignedString(jwtConfig.SecretKey)
+		if err != nil {
+			return response.
+				Error(ctx).
+				WithCode(fiber.StatusInternalServerError).
+				WithMessage("can not sign a token").End()
 		}
 
 		return response.
 			Success(ctx).
-			WithData(fiber.Map{"info": tokenInfo}).End()
+			WithData(fiber.Map{"token": tokenString}).End()
 	}
 }

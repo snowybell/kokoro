@@ -35,5 +35,8 @@ func NewDBDefault() (*gorm.DB, error) {
 }
 
 func AutoMigrate(db *gorm.DB) error {
-	return db.AutoMigrate(&entity.User{})
+	return db.AutoMigrate(
+		&entity.User{},
+		&entity.Token{},
+	)
 }
