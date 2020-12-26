@@ -13,7 +13,15 @@ var ValidatorPool = &sync.Pool{New: func() interface{} {
 }}
 
 func ShouldBind(ctx *fiber.Ctx, s interface{}) error {
-	if err := ctx.BodyParser(&s); err != nil {
+	if err := ctx.BodyParser(s); err != nil {
+		return err
+	}
+	v := ValidatorPool.Get().(*validator.Validate)
+	return v.Struct(s)
+}
+
+func ShouldBindQuery(ctx *fiber.Ctx, s interface{}) error {
+	if err := ctx.QueryParser(s); err != nil {
 		return err
 	}
 	v := ValidatorPool.Get().(*validator.Validate)
