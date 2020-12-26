@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"net/http"
+
 	"github.com/gofiber/fiber/v2"
 	jwtware "github.com/gofiber/jwt/v2"
 	"github.com/snowybell/kokoro/response"
@@ -15,5 +17,8 @@ func Protected(jwtConfig *utils.JWTConfig) func(ctx *fiber.Ctx) error {
 }
 
 func jwtError(ctx *fiber.Ctx, err error) error {
-	return response.Error(ctx).WithMessage(err.Error()).End()
+	return response.
+		Error(ctx).
+		WithCode(http.StatusForbidden).
+		WithMessage(err.Error()).End()
 }

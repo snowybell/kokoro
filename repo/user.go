@@ -10,8 +10,8 @@ func (r *repository) GetUser(user entity.User) (*entity.User, error) {
 	return &user, nil
 }
 
-func (r *repository) GetUserByUsername(username string) (*entity.User, error) {
-	return r.GetUser(entity.User{Username: username})
+func (r *repository) GetUserByEmail(email string) (*entity.User, error) {
+	return r.GetUser(entity.User{Email: email})
 }
 
 func (r *repository) SaveUser(user entity.User) (*entity.User, error) {
