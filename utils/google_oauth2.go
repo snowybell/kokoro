@@ -23,6 +23,8 @@ func NewGoogleOAuthConfig() (*oauth2.Config, error) {
 		ClientSecret: cfg.ClientSecret,
 		RedirectURL:  cfg.RedirectURL,
 		Scopes: []string{
+			"https://www.googleapis.com/auth/userinfo.email",
+			"https://www.googleapis.com/auth/userinfo.profile",
 			"https://www.googleapis.com/auth/drive.appdata",
 			"https://www.googleapis.com/auth/drive.file",
 		},
