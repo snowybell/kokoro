@@ -2,11 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="eacb43fe-e6cf-44ad-8b9f-87200afc2ea4" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/handler/oauth/google.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/handler/oauth/google.go" beforeDir="false" afterPath="$PROJECT_DIR$/handler/oauth/google.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/router/router.go" beforeDir="false" afterPath="$PROJECT_DIR$/router/router.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utils/google_oauth2.go" beforeDir="false" afterPath="$PROJECT_DIR$/utils/google_oauth2.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/validator.go" beforeDir="false" afterPath="$PROJECT_DIR$/utils/validator.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
