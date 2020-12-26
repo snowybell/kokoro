@@ -42,6 +42,7 @@ func SetupRoutes(app *fiber.App) {
 			utils.NewGoogleOAuthConfig,
 		),
 		fx.Invoke(Register),
+		fx.NopLogger,
 	)
 
 	if err := fxApp.Err(); err != nil {
