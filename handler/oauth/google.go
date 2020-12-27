@@ -66,6 +66,21 @@ func GoogleLoginCallback(cfg *oauth2.Config, jwtConfig *utils.JWTConfig, repo re
 				WithMessage(err.Error()).End()
 		}
 
+		gToken, err := gService.Tokeninfo().Do()
+		if err != nil {
+			return response.
+				Error(ctx).
+				WithCode(fiber.StatusInternalServerError).
+				WithMessage(err.Error()).End()
+		}
+
+		if CompareScope(cfg.Scopes, gToken.Scope) == ScopesNotMatched {
+			return response.
+				Error(ctx).
+				WithCode(fiber.StatusBadRequest).
+				WithMessage("oauth2 token is lack of permission").End()
+		}
+
 		gUser, err := gService.Userinfo.V2.Me.Get().Do()
 		if err != nil {
 			return response.
