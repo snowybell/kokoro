@@ -1,6 +1,9 @@
 package repo
 
-import "github.com/snowybell/kokoro/entity"
+import (
+	"github.com/snowybell/kokoro/entity"
+	"gorm.io/gorm"
+)
 
 func (r *repository) GetToken(token entity.Token) (*entity.Token, error) {
 	err := r.DB.Where(&token).Take(&token).Error
@@ -8,6 +11,10 @@ func (r *repository) GetToken(token entity.Token) (*entity.Token, error) {
 		return nil, err
 	}
 	return &token, nil
+}
+
+func (r *repository) GetTokenByID(id uint) (*entity.Token, error) {
+	return r.GetToken(entity.Token{Model: gorm.Model{ID: id}})
 }
 
 func (r *repository) SaveToken(token entity.Token) (*entity.Token, error) {

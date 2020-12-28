@@ -6,7 +6,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/snowybell/kokoro/handler"
 	OAuth "github.com/snowybell/kokoro/handler/oauth"
-	"github.com/snowybell/kokoro/middleware"
+	mw "github.com/snowybell/kokoro/middleware"
 	r "github.com/snowybell/kokoro/repo"
 	"github.com/snowybell/kokoro/utils"
 	"go.uber.org/fx"
@@ -16,7 +16,7 @@ import (
 func Register(app *fiber.App, repo r.Repository,
 	jwtConfig *utils.JWTConfig, gOAuthConfig *oauth2.Config) {
 	v1 := app.Group("/v1")
-	v1.Get("/me", middleware.Protected(jwtConfig), handler.Me)
+	v1.Get("/me", mw.Protected(jwtConfig, repo), handler.Me)
 
 	// OAuth
 	oauth := v1.Group("/oauth")
