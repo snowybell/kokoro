@@ -28,7 +28,9 @@ func GoogleLoginRedirect(cfg *oauth2.Config) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
 		state := strconv.FormatInt(time.Now().Unix(), 10)
 		redirectURL := cfg.AuthCodeURL(state, oauth2.AccessTypeOffline)
-		return ctx.Redirect(redirectURL, fiber.StatusMovedPermanently)
+		return response.
+			Success(ctx).
+			WithData(fiber.Map{"redirect_url": redirectURL}).End()
 	}
 }
 
