@@ -2,8 +2,20 @@
 # Just run `source .env_profile/development`
 # then you can run the app
 
+# JSONWebToken configurations
+export JWT_SECRET_KEY=
+
 # Database configurations
+export DATABASE_AUTO_MIGRATE=
 export DATABASE_HOST=
 export DATABASE_NAME=
 export DATABASE_USER=
 export DATABASE_PASSWORD=
+
+# Google OAuth2 configurations
+export GOOGLE_OAUTH2_CLIENT_ID=
+export GOOGLE_OAUTH2_CLIENT_SECRET=
+export GOOGLE_OAUTH2_REDIRECT_URL=
+
+# Frontend integrating configurations
+export FRONTEND_URL=

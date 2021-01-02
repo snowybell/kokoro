@@ -35,15 +35,13 @@ func GoogleLoginRedirect(cfg *oauth2.Config) fiber.Handler {
 }
 
 type LoginCallBackInput struct {
-	State  string `query:"state" validate:"required"`
-	Code   string `query:"code" validate:"required"`
-	Scopes string `query:"scope" validate:"required"`
+	Code string `query:"code" validate:"required"`
 }
 
 func GoogleLoginCallback(cfg *oauth2.Config, jwtConfig *utils.JWTConfig, repo repo.Repository) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
 		var input LoginCallBackInput
-		if err := utils.ShouldBindQuery(ctx, &input); err != nil {
+		if err := utils.ShouldBind(ctx, &input); err != nil {
 			return response.
 				Error(ctx).
 				WithMessage("bad request").End()

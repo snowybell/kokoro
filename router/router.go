@@ -3,6 +3,9 @@ package router
 import (
 	"log"
 
+	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/requestid"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/snowybell/kokoro/handler"
 	OAuth "github.com/snowybell/kokoro/handler/oauth"
@@ -14,14 +17,19 @@ import (
 )
 
 func Register(app *fiber.App, repo r.Repository,
-	jwtConfig *utils.JWTConfig, gOAuthConfig *oauth2.Config) {
+	jwtConfig *utils.JWTConfig, gOAuthConfig *oauth2.Config, feConfig *utils.FrontendConfig) {
+	// Setup mandatory middlewares
+	app.Use(logger.New(), requestid.New(),
+		utils.NewCORSAllowOrigin(feConfig.URL))
+
+	// Group version /v1
 	v1 := app.Group("/v1")
 	v1.Get("/me", mw.Protected(jwtConfig, repo), handler.Me)
 
 	// OAuth
 	oauth := v1.Group("/oauth")
 	oauth.Get("/google", OAuth.GoogleLoginRedirect(gOAuthConfig))
-	oauth.Get("/google/callback", OAuth.GoogleLoginCallback(gOAuthConfig, jwtConfig, repo))
+	oauth.Post("/google/callback", OAuth.GoogleLoginCallback(gOAuthConfig, jwtConfig, repo))
 }
 
 func SetupRoutes(app *fiber.App) {
@@ -33,6 +41,7 @@ func SetupRoutes(app *fiber.App) {
 			},
 			r.NewRepoDefault,
 			utils.NewJWTConfig,
+			utils.NewFrontendConfig,
 			utils.NewGoogleOAuthConfig,
 		),
 		fx.Invoke(Register),
